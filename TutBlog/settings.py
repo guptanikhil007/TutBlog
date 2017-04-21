@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
-
+from easy_thumbnails.conf import settings as thumbnail_settings
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -40,8 +40,17 @@ INSTALLED_APPS = [
 
     #custom
     'User.apps.UserConfig',
-    'Blogs.apps.BlogsConfig'
+    'Blogs.apps.BlogsConfig',
+
+    #from github
+    'easy_thumbnails',
+    'image_cropping',
+    'django_summernote',
 ]
+
+THUMBNAIL_PROCESSORS = (
+    'image_cropping.thumbnail_processors.crop_corners',
+) + thumbnail_settings.THUMBNAIL_PROCESSORS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -58,7 +67,9 @@ ROOT_URLCONF = 'TutBlog.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            "Templates"
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -122,3 +133,111 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+    '/var/www/static/',
+]
+def static_url(url):
+    return os.path.join(STATIC_URL, url)
+LOGIN_REDIRECT_URL = '/'
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'tutblog123@gmail.com'
+EMAIL_HOST_PASSWORD = 'rastogi_gupta'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
+#django_summernote
+
+SUMMERNOTE_CONFIG = {
+    # Using SummernoteWidget - iframe mode
+    'iframe': True,  # or set False to use SummernoteInplaceWidget - no iframe mode
+
+    # Using Summernote Air-mode
+    'airMode': False,
+
+    # Use native HTML tags (`<b>`, `<i>`, ...) instead of style attributes
+    # (Firefox, Chrome only)
+    'styleWithTags': True,
+
+    # Set text direction : 'left to right' is default.
+    'direction': 'ltr',
+
+    # Change editor size
+    'width': '100%',
+    'height': '480',
+
+    # Use proper language setting automatically (default)
+    'lang': None,
+
+    # Or, set editor language/locale forcely
+    #'lang': 'ko-KR',
+
+    # Customize toolbar buttons
+    'toolbar': [
+        ['style', ['style']],
+        ['style', ['bold', 'italic', 'underline', 'clear', 'superscript', 'subscript', 'strikethrough']],
+        ['para', ['ul', 'ol', 'paragraph', 'height']],
+        ['fontsize', ['fontsize']],
+        ['insert', ['link', 'picture', 'video', 'hr', 'table']],
+        ['view', ['fullscreen', 'codeview']],
+        ['color', ['color']],
+        ['fontname', ['fontname']],
+    ],
+
+    # Need authentication while uploading attachments.
+    'attachment_require_authentication': True,
+
+    # Set `upload_to` function for attachments.
+    #'attachment_upload_to': my_custom_upload_to_func(),
+
+    # Set custom storage class for attachments.
+    #'attachment_storage_class': 'my.custom.storage.class.name',
+
+    # Set custom model for attachments (default: 'django_summernote.Attachment')
+    #'attachment_model': 'my.custom.attachment.model', # must inherit 'django_summernote.AbstractAttachment'
+
+    # Set common css/js media files
+    'external_css': (                                             
+        '//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css',      
+    ),                                                                          
+    'external_js': (                                              
+        '//code.jquery.com/jquery-1.9.1.min.js',                                
+        '//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js',        
+    ),
+    'internal_css': (
+        static_url('django_summernote/summernote.css'),
+    ),
+    'internal_js': (
+        static_url('django_summernote/jquery.ui.widget.js'),
+        static_url('django_summernote/jquery.iframe-transport.js'),
+        static_url('django_summernote/jquery.fileupload.js'),
+        static_url('django_summernote/summernote.min.js'),
+    ),
+
+    # You can add custom css/js for SummernoteWidget.
+    # 'css': (
+    # ),
+    # 'js': (
+    # ),
+
+    # And also for SummernoteInplaceWidget.
+    # !!! Be sure to put {{ form.media }} in template before initiate summernote.
+    # 'css_for_inplace': (
+    # ),
+    # 'js_for_inplace': (
+    # ),
+
+    # You can disable file upload feature.
+    'disable_upload': False,
+
+    # Codemirror as codeview
+    'codemirror': {
+            # Please visit http://summernote.org/examples/#codemirror-as-codeview
+            'theme': 'monokai',
+    },
+
+}
